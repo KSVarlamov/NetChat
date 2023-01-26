@@ -15,7 +15,6 @@ public class ChatClient extends Thread {
     private BufferedWriter out;
     private volatile String userName = null;
     private ChatController controller;
-    private boolean isTimeToDie = false;
 
     public ChatClient(Socket socket, ChatController controller) {
         try {
@@ -105,7 +104,6 @@ public class ChatClient extends Thread {
     void close() {
         try {
             logger.info("Поток пользователя [{}] заканчивает работу", userName);
-            isTimeToDie = true;
             socket.close();
         } catch (IOException e) {
             logger.error("Ошибка закрытия сокета клиента [" + userName + "]", e);

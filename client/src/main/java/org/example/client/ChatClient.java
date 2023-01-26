@@ -63,16 +63,6 @@ public class ChatClient {
         }
     }
 
-    private void send(String message) {
-        try {
-
-            out.write(message + "\n");
-            out.flush();
-        } catch (IOException e) {
-            logger.error("Ошибка отправки сообщения", e);
-        }
-    }
-
     public void sendMessage(String message) {
         messagesLogger.info("[{}] {}", username, message);
         try {
