@@ -1,4 +1,4 @@
-# Сетевой част
+# Сетевой чат
 
 Реализация задачи [отсюда](https://github.com/netology-code/jd-homeworks/tree/master/diploma)
 

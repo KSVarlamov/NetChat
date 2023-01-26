@@ -48,28 +48,34 @@ public class ChatClient extends Thread {
             }
         } catch (SocketException e) {
             if (!isTimeToDie) {
-                logger.error("Ошибка сокета", e);
+                logger.info("Отключение клиента [{}]", userName);
             }
         } catch (IOException e) {
             logger.error("IO Error", e);
         }
+        controller.connectionLost(userName);
         logger.info("Поток пользователя [{}] закончил работу", userName);
     }
 
-    private void registerUser(String name) {
+    private synchronized void registerUser(String name) {
         if (this.userName != null) {
-            send("/error incorrect user name");
+            send("/error incorrect user name (null name)");
             return;
         }
         String tmp = name.substring(7);
         if (tmp.length() > 0) {
-            boolean isRegistered = controller.registerUser(tmp, this);
-            if (isRegistered) {
-                this.userName = tmp;
-                send("/ok");
-                logger.info("Поток пользователя [{}] зарегистрирован на сервере", this.userName);
+            boolean canRegister = controller.canRegister(tmp);
+            if (canRegister) {
+                if (controller.registerUser(tmp, this)) {
+                    this.userName = tmp;
+                    send("/ok");
+                    controller.sendSystemMessage("К нам присоединился " + tmp);
+                    logger.info("Поток пользователя [{}] зарегистрирован на сервере", this.userName);
+                } else {
+                    send("/error incorrect user name (unknown err)");
+                }
             } else {
-                send("/error incorrect user name");
+                send("/error incorrect user name (user already registered)");
             }
         }
     }

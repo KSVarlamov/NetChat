@@ -20,8 +20,8 @@ public class ChatController {
 
     public void addClient(Socket client) {
 
-        logger.info("ZZZ Подключение клиента: {}:{}", client.getInetAddress(), client.getPort());
-            new ChatClient(client, this);
+        logger.info("Подключение клиента: {}:{}", client.getInetAddress(), client.getPort());
+        new ChatClient(client, this);
     }
 
     public void stopChat() {
@@ -42,11 +42,14 @@ public class ChatController {
     public boolean registerUser(String username, ChatClient chatClient) {
         if (clients.containsKey(username)) return false;
         clients.put(username, chatClient);
-        sendSystemMessage("К нам присоединился " + username);
         return true;
     }
 
-    public synchronized void sendSystemMessage(String message) {
+    public boolean canRegister(String username) {
+        return !clients.containsKey(username);
+    }
+
+    public void sendSystemMessage(String message) {
         message = "Системное сообщение: " + message;
         messagesLogger.info(message);
         for (ChatClient c : clients.values()) {
@@ -73,6 +76,8 @@ public class ChatController {
     }
 
     public void connectionLost(String clientName) {
-        clients.remove(clientName);
+        if (clientName != null) {
+            clients.remove(clientName);
+        }
     }
 }
