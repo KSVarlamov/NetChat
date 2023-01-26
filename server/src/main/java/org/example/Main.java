@@ -3,19 +3,25 @@ package org.example;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.*;
-import java.nio.charset.StandardCharsets;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Properties;
+import java.util.Scanner;
 
 public class Main {
+    public static final Scanner SCANNER = new Scanner(System.in);
     private static final String APP_DIR = "_NET CHAT\\";
-    private static final String SETTINGS_FILE_NAME = "server_settings.txt";
+    private static final String SETTINGS_FILE_NAME = "server.properties";
     private static final Logger logger;
     private static final Path HOME_DIR = Path.of(System.getProperty("user.home") + "\\" + APP_DIR);
-
+    private static final Path SETTINGS_FILE = Path.of(HOME_DIR + "\\" + SETTINGS_FILE_NAME);
+    private static final Properties properties = new Properties();
     private static int port = 6644;
     private static ChatController controller;
+
 
     static {
         System.setProperty("App.logs", HOME_DIR.toString());
@@ -29,31 +35,27 @@ public class Main {
         System.out.println("Добро пожаловать в консоль управления сервером. Чат-сервер стартовал на порту " + port);
         controller.startChat();
         printMenu();
-        try (BufferedReader reader = new BufferedReader(new InputStreamReader(System.in))) {
-            boolean isExit = false;
-            while (!isExit) {
-                String command = reader.readLine();
-
-                switch (command) {
-                    case "/stop":
-                        logger.info("Остановка сервера чата");
-                        controller.stopChat();
-                        isExit = true;
-                        break;
-                    case "/help":
-                        printMenu();
-                        break;
-                    case "/stat":
-                        printStatistics();
-                        break;
-                    default:
-                        System.out.println("Неизвестная команда");
-                        printMenu();
-                }
+        boolean isExit = false;
+        while (!isExit) {
+            String command = SCANNER.nextLine();
+            switch (command) {
+                case "/stop":
+                    logger.info("Остановка сервера чата");
+                    controller.stopChat();
+                    isExit = true;
+                    break;
+                case "/help":
+                    printMenu();
+                    break;
+                case "/stat":
+                    printStatistics();
+                    break;
+                default:
+                    System.out.println("Неизвестная команда");
+                    printMenu();
             }
-        } catch (IOException e) {
-            logger.error("Ошибка работы с консолью",e);
         }
+        SCANNER.close();
     }
 
     private static void printStatistics() {
@@ -64,30 +66,31 @@ public class Main {
     }
 
     private static void loadSettingsFromFile() {
-        logger.info("Загрузка конфигурации");
-        Path settingsPath = HOME_DIR.resolve(SETTINGS_FILE_NAME);
-        if (Files.exists(settingsPath)) {
-            try (FileReader fileReader = new FileReader(settingsPath.toFile());
-                 BufferedReader reader = new BufferedReader(fileReader)) {
-                port = Integer.parseInt(reader.readLine());
-            } catch (Exception e) {
-                logger.error("Ошибка загрузки конфигурации", e);
+        if (Files.exists(SETTINGS_FILE)) {
+            logger.info("Загрузка настроек приложения");
+            try (var out = new FileInputStream(SETTINGS_FILE.toFile())) {
+                properties.load(out);
+            } catch (IOException e) {
+                logger.error("Ошибка чтения файла настроек", e);
+                System.out.println("Ошибка чтения файла настроек. Отредактируйте или удалите файл \n" + SETTINGS_FILE);
             }
         } else {
-            crateDefaultSettingsFile(settingsPath);
+            System.out.println("Файл настроек отсутствует");
+            System.out.println("Введите порт сервера: ");
+            String newPort = SCANNER.nextLine();
+            properties.setProperty("port", newPort);
+            port = Integer.parseInt(newPort);
+            saveSettingsToFile();
         }
     }
 
-    private static void crateDefaultSettingsFile(Path settings) {
-
-        try {
-            Files.createFile(settings);
-            Files.write(settings, String.valueOf(port).getBytes(StandardCharsets.UTF_8));
+    private static void saveSettingsToFile() {
+        try (var out = new FileOutputStream(SETTINGS_FILE.toFile())) {
+            properties.store(out, "");
+            logger.info("Сохранение настроек приложения");
         } catch (IOException e) {
-            logger.error("Ошибка создания файла настроек", e);
+            logger.error("Ошибка создания настроек", e);
         }
-
-
     }
 
     private static void printMenu() {

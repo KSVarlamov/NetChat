@@ -16,7 +16,7 @@ public class Main {
     private static final String SETTINGS_FILE_NAME = "client.properties";
     private static final Logger logger;
     private static final Path HOME_DIR = Path.of(System.getProperty("user.home") + "\\" + APP_DIR);
-    private static final Path settingsFile = Path.of(HOME_DIR + "\\" + SETTINGS_FILE_NAME);
+    private static final Path SETTINGS_FILE = Path.of(HOME_DIR + "\\" + SETTINGS_FILE_NAME);
     private static final Properties properties = new Properties();
     private static boolean isConnected = false;
     private static ChatClient client;
@@ -82,13 +82,13 @@ public class Main {
 
     private static void loadSettingsFromFile() {
 
-        if (Files.exists(settingsFile)) {
+        if (Files.exists(SETTINGS_FILE)) {
             logger.info("Загрузка настроек приложения");
-            try (var out = new FileInputStream(settingsFile.toFile())) {
+            try (var out = new FileInputStream(SETTINGS_FILE.toFile())) {
                 properties.load(out);
             } catch (IOException e) {
                 logger.error("Ошибка чтения файла настроек", e);
-                System.out.println("Ошибка чтения файла настроек. Отредактируйте или удалите файл \n" + settingsFile);
+                System.out.println("Ошибка чтения файла настроек. Отредактируйте или удалите файл \n" + SETTINGS_FILE);
             }
         } else {
             System.out.println("Файл настроек отсутствует");
@@ -99,6 +99,7 @@ public class Main {
             String port = scanner.nextLine();
             System.out.println("Введите ваше имя в чате: ");
             String username = scanner.nextLine();
+            scanner.close();
             properties.setProperty("host", host);
             properties.setProperty("port", port);
             properties.setProperty("username", username);
@@ -107,8 +108,9 @@ public class Main {
     }
 
     private static void saveSettingsToFile() {
-        try (var out = new FileOutputStream(settingsFile.toFile())) {
+        try (var out = new FileOutputStream(SETTINGS_FILE.toFile())) {
             properties.store(out, "");
+            logger.info("Сохранение настроек приложения");
         } catch (IOException e) {
             logger.error("Ошибка создания настроек", e);
         }
