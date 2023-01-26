@@ -35,7 +35,7 @@ public class ChatClient extends Thread {
 
         String message;
         try {
-            while (!isTimeToDie) {
+            while (true) {
                 message = in.readLine();
                 if (message == null) {
                     logger.info("Поток пользователя [{}] потерял соединение", userName);
@@ -47,9 +47,7 @@ public class ChatClient extends Thread {
                 }
             }
         } catch (SocketException e) {
-            if (!isTimeToDie) {
                 logger.info("Отключение клиента [{}]", userName);
-            }
         } catch (IOException e) {
             logger.error("IO Error", e);
         }

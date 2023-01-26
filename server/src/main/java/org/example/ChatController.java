@@ -61,7 +61,6 @@ public class ChatController {
         message = String.format("[%s] %s", sender.getUserName(), message);
         messagesLogger.info(message);
         for (ChatClient c : clients.values()) {
-            if (c == sender) continue;
             c.send(message);
         }
         messagesCount++;
