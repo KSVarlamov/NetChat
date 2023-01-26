@@ -24,7 +24,7 @@ public class ClientHandler extends Thread {
             this.controller = controller;
             this.start();
         } catch (IOException e) {
-            logger.error("Ошибка работы с сокетом", e);
+            logger.error("[{}]Ошибка работы с сокетом", userName, e);
         }
     }
 
