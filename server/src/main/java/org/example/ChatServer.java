@@ -33,6 +33,7 @@ public class ChatServer extends Thread {
                 }
             }
         } catch (IOException e) {
+            logger.error("Сокет закрыт");
         }
     }
 }
