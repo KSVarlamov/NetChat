@@ -8,15 +8,15 @@ import java.net.Socket;
 import java.net.SocketException;
 
 
-public class ChatClient extends Thread {
-    private final Logger logger = LoggerFactory.getLogger(ChatClient.class);
+public class ClientHandler extends Thread {
+    private final Logger logger = LoggerFactory.getLogger(ClientHandler.class);
     private Socket socket;
     private BufferedReader in;
     private BufferedWriter out;
     private volatile String userName = null;
     private ChatController controller;
 
-    public ChatClient(Socket socket, ChatController controller) {
+    public ClientHandler(Socket socket, ChatController controller) {
         try {
             this.socket = socket;
             this.in = new BufferedReader(new InputStreamReader(socket.getInputStream()));

@@ -10,38 +10,38 @@ public class ChatController {
 
     private final Logger logger = LoggerFactory.getLogger(ChatController.class);
     private final Logger messagesLogger = LoggerFactory.getLogger("chatlog");
-    private final ConcurrentHashMap<String, ChatClient> clients = new ConcurrentHashMap<>();
-    private final ChatServer chatServer;
+    private final ConcurrentHashMap<String, ClientHandler> clients = new ConcurrentHashMap<>();
+    private final IncomeHandler incomeHandler;
     private int messagesCount = 0;
 
     public ChatController(int port) {
-        this.chatServer = new ChatServer(port, this);
+        this.incomeHandler = new IncomeHandler(port, this);
     }
 
     public void addClient(Socket client) {
 
         logger.info("Подключение клиента: {}:{}", client.getInetAddress(), client.getPort());
-        new ChatClient(client, this);
+        new ClientHandler(client, this);
     }
 
     public void stopChat() {
         logger.info("Получена команда на остановку чата");
         logger.info("Рассылка клиентам уведомлений о закрытии");
-        for (ChatClient c : clients.values()) {
+        for (ClientHandler c : clients.values()) {
             c.close();
         }
-        chatServer.interrupt();
+        incomeHandler.interrupt();
         logger.info("Остановка сервера");
 
     }
 
     public void startChat() {
-        chatServer.start();
+        incomeHandler.start();
     }
 
-    public boolean registerUser(String username, ChatClient chatClient) {
+    public boolean registerUser(String username, ClientHandler clientHandler) {
         if (clients.containsKey(username)) return false;
-        clients.put(username, chatClient);
+        clients.put(username, clientHandler);
         return true;
     }
 
@@ -52,15 +52,15 @@ public class ChatController {
     public void sendSystemMessage(String message) {
         message = "Системное сообщение: " + message;
         messagesLogger.info(message);
-        for (ChatClient c : clients.values()) {
+        for (ClientHandler c : clients.values()) {
             c.send(message);
         }
     }
 
-    public synchronized void sendAll(String message, ChatClient sender) {
+    public synchronized void sendAll(String message, ClientHandler sender) {
         message = String.format("[%s] %s", sender.getUserName(), message);
         messagesLogger.info(message);
-        for (ChatClient c : clients.values()) {
+        for (ClientHandler c : clients.values()) {
             c.send(message);
         }
         messagesCount++;

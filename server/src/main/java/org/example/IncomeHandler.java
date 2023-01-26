@@ -8,12 +8,12 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
 
-public class ChatServer extends Thread {
+public class IncomeHandler extends Thread {
     private final int port;
     private final ChatController controller;
-    private final Logger logger = LoggerFactory.getLogger(ChatServer.class);
+    private final Logger logger = LoggerFactory.getLogger(IncomeHandler.class);
 
-    public ChatServer(int port, ChatController controller) {
+    public IncomeHandler(int port, ChatController controller) {
         this.port = port;
         this.controller = controller;
     }

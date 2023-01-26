@@ -57,14 +57,18 @@ public class ChatClient {
 
     public void close() {
         try {
+            out.write("/stop\n");
+            out.flush();
+            Thread.sleep(1000);
             socket.close();
         } catch (IOException e) {
-            logger.error("Ошибка работы с сокетом", e);
+            logger.info("Соединение закрыто сервером");
+        } catch (InterruptedException e) {
+            logger.error("Что-то пошло совсем не так", e);
         }
     }
 
     public void sendMessage(String message) {
-        //messagesLogger.info("[{}] {}", username, message);
         try {
             out.write("/message " + message + "\n");
             out.flush();

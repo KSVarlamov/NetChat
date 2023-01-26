@@ -12,7 +12,7 @@ import java.util.Properties;
 import java.util.Scanner;
 
 public class Main {
-    public static final Scanner SCANNER = new Scanner(System.in);
+    private static final Scanner SCANNER = new Scanner(System.in);
     private static final String APP_DIR = "_NET CHAT\\";
     private static final String SETTINGS_FILE_NAME = "server.properties";
     private static final Logger logger;
@@ -32,8 +32,8 @@ public class Main {
         logger.info("Запуск сервера");
         loadSettingsFromFile();
         controller = new ChatController(port);
-        System.out.println("Добро пожаловать в консоль управления сервером. Чат-сервер стартовал на порту " + port);
         controller.startChat();
+        System.out.println("Добро пожаловать в консоль управления сервером. Чат-сервер стартовал на порту " + port);
         printMenu();
         boolean isExit = false;
         while (!isExit) {
