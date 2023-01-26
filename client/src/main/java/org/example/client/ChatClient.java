@@ -64,7 +64,7 @@ public class ChatClient {
     }
 
     public void sendMessage(String message) {
-        messagesLogger.info("[{}] {}", username, message);
+        //messagesLogger.info("[{}] {}", username, message);
         try {
             out.write("/message " + message + "\n");
             out.flush();

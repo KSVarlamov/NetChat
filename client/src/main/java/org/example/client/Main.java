@@ -20,6 +20,7 @@ public class Main {
     private static final Properties properties = new Properties();
     private static boolean isConnected = false;
     private static ChatClient client;
+    private static final Scanner SCANNER = new Scanner(System.in);
 
     static {
         System.setProperty("App.logs", HOME_DIR.toString());
@@ -31,10 +32,9 @@ public class Main {
         loadSettingsFromFile();
         System.out.println("Настройки загружены");
         printMenu();
-        Scanner scanner = new Scanner(System.in);
         String in = "";
         while (true) {
-            in = scanner.nextLine();
+            in = SCANNER.nextLine();
             if (in.equals("/start")) {
                 if (isConnected) {
                     System.out.println("Вы уже подключены");
@@ -55,6 +55,7 @@ public class Main {
                 client.sendMessage(in);
             }
         }
+        SCANNER.close();
     }
 
     private static void changeName(String in) {
@@ -92,14 +93,12 @@ public class Main {
             }
         } else {
             System.out.println("Файл настроек отсутствует");
-            Scanner scanner = new Scanner(System.in);
             System.out.println("Введите адрес сервера: ");
-            String host = scanner.nextLine();
+            String host = SCANNER.nextLine();
             System.out.println("Введите порт сервера: ");
-            String port = scanner.nextLine();
+            String port = SCANNER.nextLine();
             System.out.println("Введите ваше имя в чате: ");
-            String username = scanner.nextLine();
-            scanner.close();
+            String username = SCANNER.nextLine();
             properties.setProperty("host", host);
             properties.setProperty("port", port);
             properties.setProperty("username", username);

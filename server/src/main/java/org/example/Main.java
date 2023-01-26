@@ -60,8 +60,7 @@ public class Main {
 
     private static void printStatistics() {
         StringBuilder stat = new StringBuilder();
-        stat.append("Сейчас на сервере: ").append(controller.getClientsCount()).append("\n")
-                .append("Все отправлено сообщений: ").append(controller.getMessagesCount());
+        stat.append("Сейчас на сервере: ").append(controller.getClientsCount()).append("\n").append("Все отправлено сообщений: ").append(controller.getMessagesCount());
         System.out.println(stat);
     }
 
